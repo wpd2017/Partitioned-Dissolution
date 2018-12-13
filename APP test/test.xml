@@ -1,0 +1,175 @@
+﻿<MapGeneBatchProcessing>
+  	<RelativePath>F:\福建\test_linkroad\paper_test</RelativePath>
+	<WriteToConsole>true</WriteToConsole>
+	
+	<!-- 数据预处理相关  -->
+	<Mission id="20" note="gometry multi to single">
+		<ParaIn>
+			<FilePath>data_test\no_narrow_merge.shp</FilePath>
+			<FilePath>data_test\narrow_merge.shp</FilePath>
+			<Method>2</Method>
+		</ParaIn>
+		<ParaOut>
+			<FilePath>data_test\no_narrow_merge.shp</FilePath>
+			<FilePath>data_test\narrow_merge.shp</FilePath>
+		</ParaOut>
+	</Mission>
+	
+	<Mission id="70" note="topology process">
+		<ParaIn>
+			<Layers note="SourceDataStore">
+				<FilePath>data_test\no_narrow_merge.shp</FilePath>
+				<FilePath>data_test\narrow_merge.shp</FilePath>
+			</Layers>
+			<Parameter>				
+				<FuzzyToleranceSource note="初始构建拓扑相关容差，结点拟合">0.001</FuzzyToleranceSource>
+				<IntersectionEpsilonSource note="初始构建拓扑相关容差，线段相交容差">0.00001</IntersectionEpsilonSource>
+				<RedundancyVertexToleranceSource note="初始构建拓扑相关容差，弧段冗余节点容差">0.001</RedundancyVertexToleranceSource>
+				<DistanceEpsilon note="距离阈值">0.05</DistanceEpsilon>
+				<FuzzyTolerance note="结点拟合">0.001</FuzzyTolerance>
+				<IntersectionEpsilon note="线段相交容差">0.00001</IntersectionEpsilon>
+				<RedundancyVertexTolerance note="弧段冗余节点容差">0.001</RedundancyVertexTolerance>
+				<LinkArcStyle note="移除假结点的时候弧段连接条件，3传统考虑方式(考虑LayerID与NameID)，1图层ID，2NameID，4要素ID，8重复弧">7</LinkArcStyle>
+				<MemeoryLinkFIDs note="">true</MemeoryLinkFIDs>
+				<WeightProcess note="是否采用权重处理">false</WeightProcess>
+				<TesselationMode note="图斑或面要素铺盖模式">true</TesselationMode>
+				<Precision note="数据精度（精确到小数点后几位）">-1</Precision>
+				<TinyAngle note="弧段内部以及弧段之间的小角度误差（以角度为单位）">0</TinyAngle>
+				<IsRestructEntity note="拓扑打散化简后是否重构实体">true</IsRestructEntity>
+				<IsSelfProcess note="是否自身的预处理">false</IsSelfProcess>
+			</Parameter>			
+		</ParaIn>
+		<ParaOut>
+			<Layers note="DstDataStores">
+				<FilePath editable="true">data_test\no_narrow_merge.shp</FilePath>
+				<FilePath editable="true">data_test\narrow_merge.shp</FilePath>
+			</Layers>		
+		</ParaOut>
+	</Mission>
+	
+	<Mission id="130" note="polygon merge">
+		<ParaIn>
+			<Layers note="SubjectDataStore">
+				<FilePath>data_test\narrow_merge.shp</FilePath>
+			</Layers>
+			<Layers note="ClipDataStore">
+				<FilePath></FilePath>
+			</Layers>					
+			<Parameter note="">
+				<OperateType note="交、差、并、异或操作">2</OperateType>
+				<IsOffsetOperator note="多边形偏移或逻辑操作模式">false</IsOffsetOperator>
+				<JoinType note="节点接头类型JOIN_ROUND=0,JOIN_MITRE=1,JOIN_BEVEL=2">1</JoinType>
+				<EndType note="尾部接头类型CAP_ROUND=0,CAP_FLAT=1,CAP_SQUARE=2">3</EndType>
+				<QuadrantSegments note="节点接头插值类型">4</QuadrantSegments>
+				<MitreLimit note="节点接头插值阈值">0</MitreLimit>
+				<OffsetDelta note="偏移量">0</OffsetDelta>
+				<OffsetIsUnion note="偏移模式下对象是否合并">false</OffsetIsUnion>
+				<IsPolygonSelftwineProcess note="是否多边形自相交标准化">true</IsPolygonSelftwineProcess>
+				<FuzzyTolerance note="结点拟合">0.001</FuzzyTolerance>
+				<IntersectionEpsilon note="线段相交容差">0.00001</IntersectionEpsilon>
+				<RedundancyVertexTolerance note="节点冗余容差">0.001</RedundancyVertexTolerance>
+				<SmallRingRate note="小环与大环的删除比值">0.05</SmallRingRate>
+			</Parameter>			
+		</ParaIn>
+		<ParaOut>
+			<Layers note="DstDataStores">
+				<FilePath>data_test\narrow_merge.shp</FilePath>
+			</Layers>
+		</ParaOut>
+	</Mission>
+
+	<!-- 分块溶解相关  -->
+	<Mission id="132" note="polygon clip">
+		<ParaIn>
+			<Layers note="SourceDataStore">
+				<FilePath clipwin="true">data_test\no_narrow_merge.shp</FilePath>
+				<FilePath clipwin="true">data_test\narrow_merge.shp</FilePath>				
+			</Layers>
+			<Parameter>
+				<OnceMaxCountTransfer note="一次处理数据量">10240</OnceMaxCountTransfer>
+				<ResetNewFeatureID note="裁剪结果是否重置FID">true</ResetNewFeatureID>
+				<IsClipGeometry note="是否裁剪数据">true</IsClipGeometry>
+				<IsMultiClip note="是否按照裁剪图层中的裁剪几何数据分幅输出裁剪数据">false</IsMultiClip>
+				<IsMultiClipOutNoClip note="是否按照裁剪图层中的裁剪几何数据分幅输出非裁剪数据">false</IsMultiClipOutNoClip>
+				<IsMultiGridClip note="是否是格网裁剪模式">true</IsMultiGridClip>
+				<GridSize note="格网裁剪大小">3,3</GridSize>
+				<MultiGridClipBuffer note="格网范围缓冲距（防止格网与实际距离齐边）">0</MultiGridClipBuffer>
+				<IsUseDivisionPoint note="是否自主输入分割点（格网大小小于2X2）">false</IsUseDivisionPoint>
+				<FourGridDivisionPoint note="自主输入分割点坐标">602303.526,2989619.141</FourGridDivisionPoint>
+				<GridLayer note="GridDataStore">
+					<FilePath>data_test\grid30.shp</FilePath>						
+				</GridLayer>			
+			</Parameter>			
+		</ParaIn>
+		<ParaOut>
+			<Layers note="DstDataStores">
+				<FilePath editable="true">data_test\LCA_clip_clip.shp</FilePath>	
+				<FilePath editable="true">data_test\LCA_clip_clip.shp</FilePath>					
+			</Layers>			
+		</ParaOut>
+	</Mission>
+	
+	<Mission id="110" note="polygon block split">
+			<ParaIn>
+				<Layers note="SourceDataStore">
+					<FilePath split="false">data_test\no_narrow_merge.shp</FilePath>
+					<FilePath split="true">data_test\narrow_merge.shp</FilePath>	
+				</Layers>
+				<Parameter>
+					<MissionWhileNum note="循环执行次数">9</MissionWhileNum>
+					<FuzzyToleranceSource note="结点拟合">0.001</FuzzyToleranceSource>
+					<IntersectionEpsilonSource note="线段相交容差">0.00001</IntersectionEpsilonSource>
+					<RedundancyVertexToleranceSource note="弧段冗余节点容差">0.001</RedundancyVertexToleranceSource>
+					<SplitArcCheckDuplicate note="分裂弧段的时候是否同时做重复弧的去除">false</SplitArcCheckDuplicate>
+					<TesselationMode note="图斑或面要素铺盖模式">true</TesselationMode>
+					<Precision note="数据精度（精确到小数点后几位）">-1</Precision>
+					<TinyTriangleAreaScale note="三角网中微小三角形的比例阈值">0.0001</TinyTriangleAreaScale>
+					
+					<IsOnlyArcBuilder note="仅用TopologyArcBuilder重构实体">true</IsOnlyArcBuilder>
+					<OutputFilterUnCertainty note="用TopologyNetPolygonBuilder重构实体情况下是否输出未定面实体">false</OutputFilterUnCertainty>
+					<TopologyConnectionString note="拓扑持久化存储数据"></TopologyConnectionString>
+					<OutputTopoStyle note="输出拓扑信息风格 0-不输出拓扑 1-按sqlite格式输出 2-按shp格式输出">0</OutputTopoStyle>
+					<IsResultTopology note="输出处理结果拓扑还是原始拓扑">true</IsResultTopology>
+					<IsProcess note="是否进行分裂融合处理">true</IsProcess>
+				</Parameter>			
+			</ParaIn>
+			<ParaOut>
+				<Layers note="DstDataStores">
+					<FilePath editable="true">data_test\narrow_clip_split.shp</FilePath>		
+				</Layers>	
+			</ParaOut>
+	</Mission>
+	
+	<Mission id="135" note="polygon split merge">
+		<ParaIn>
+			<Layers note="SourceDataStore">
+				<FilePath>data_test\narrow_clip_split.shp</FilePath>
+				<FilePath note="overlay">data_test\grid30.shp</FilePath>
+				<FilePath note="road">data_test\narrow_merge.shp</FilePath>					
+			</Layers>
+			<Parameter>
+				<SeamLayerNum note="缝合图层数量">9</SeamLayerNum>
+				<FuzzyTolerance note="结点拟合">0.001</FuzzyTolerance>
+				<IntersectionEpsilon note="线段相交容差">0.00001</IntersectionEpsilon>
+				<RedundancyVertexTolerance note="弧段冗余节点容差">0.001</RedundancyVertexTolerance>
+				<LinkArcStyle note="移除假结点的时候弧段连接条件，3传统考虑方式(考虑LayerID与NameID)，1图层ID，2NameID，4要素ID，8重复弧">7</LinkArcStyle>
+				<MemeoryLinkFIDs note="">true</MemeoryLinkFIDs>
+				<TesselationMode note="图斑或面要素铺盖模式">true</TesselationMode>
+				<Precision note="数据精度（精确到小数点后几位）">-1</Precision>
+				
+				<IsOnlyArcBuilder note="仅用TopologyArcBuilder重构实体">false</IsOnlyArcBuilder>
+				<OutputFilterUnCertainty note="用TopologyNetPolygonBuilder重构实体情况下是否输出未定面实体">false</OutputFilterUnCertainty>
+				<TopologyConnectionString note="拓扑持久化存储数据"></TopologyConnectionString>
+				<OutputTopoStyle note="输出拓扑信息风格 0-不输出拓扑 1-按sqlite格式输出 2-按shp格式输出">0</OutputTopoStyle>
+				<IsResultTopology note="输出处理结果拓扑还是原始拓扑">true</IsResultTopology>
+				<IsProcess note="是否进行分幅缝合处理">true</IsProcess>
+			</Parameter>			
+		</ParaIn>
+		<ParaOut>
+			<Layers note="DstDataStores">
+				<FilePath editable="true">data_test\narrow_clip_split_merge_result.shp</FilePath>	
+			</Layers>			
+		</ParaOut>
+	</Mission>
+	
+</MapGeneBatchProcessing>
